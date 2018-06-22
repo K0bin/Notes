@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,9 +48,21 @@ public class NotesFragment extends Fragment {
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 
-		RecyclerView recycler = view.findViewById(R.id.recycler);
+		final RecyclerView recycler = view.findViewById(R.id.recycler);
 		adapter = new NotesAdapter();
 		recycler.setAdapter(adapter);
+
+		final ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+			@Override
+			public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder viewHolder1) {
+				return false;
+			}
+			@Override
+			public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
+				viewModel.deleteNote(viewHolder.getAdapterPosition());
+			}
+		});
+		helper.attachToRecyclerView(recycler);
 
 		viewModel.getNotes().observe(this, adapter::submitList);
 

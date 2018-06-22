@@ -38,7 +38,7 @@ public final class AsyncHelper {
 	}
 
 	public static <T, R> void runAsync(T args, Function<T, R> async, Function<CallbackArgs<T, R>, Void> callback) {
-		if (handler == null) {
+		if (executor == null || handler == null) {
 			throw new RuntimeException("AsyncHelper has not yet been initialized.");
 		}
 
@@ -51,6 +51,14 @@ public final class AsyncHelper {
 			Message message = handler.obtainMessage(TASK_COMPLETE, new CallbackInvokation(new CallbackArgs<>(args, result), callback));
 			message.sendToTarget();
 		});
+	}
+
+	public static <T> void runAsync(T args, Function<T, Void> async) {
+		runAsync(args, async, null);
+	}
+
+	public static void runAsync(Runnable async) {
+		runAsync(null, arg -> { async.run(); return null; });
 	}
 
 	public static class CallbackArgs<T, R> {

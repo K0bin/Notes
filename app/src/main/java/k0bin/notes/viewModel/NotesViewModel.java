@@ -11,6 +11,7 @@ import k0bin.notes.App;
 import k0bin.notes.model.Database;
 import k0bin.notes.model.Note;
 import k0bin.notes.model.NotesDao;
+import k0bin.notes.util.AsyncHelper;
 
 public class NotesViewModel extends AndroidViewModel {
 	private final NotesDao notesDao;
@@ -19,7 +20,7 @@ public class NotesViewModel extends AndroidViewModel {
 	public NotesViewModel(@NonNull Application application) {
 		super(application);
 
-		Database db = ((App) application).getDb();
+		final Database db = ((App) application).getDb();
 		notesDao = db.notesDao();
 
 		notes = notesDao.getAll();
@@ -27,5 +28,17 @@ public class NotesViewModel extends AndroidViewModel {
 
 	public LiveData<List<Note>> getNotes() {
 		return notes;
+	}
+
+	public void deleteNote(int position) {
+		final List<Note> notes = this.notes.getValue();
+		if (notes == null) {
+			throw new IllegalStateException("No notes loaded");
+		}
+		if (position < 0 || notes.size() <= position) {
+			throw new IndexOutOfBoundsException("position");
+		}
+
+		AsyncHelper.runAsync(() -> notesDao.delete(notes.get(position)));
 	}
 }

@@ -15,7 +15,6 @@ public class App extends Application {
 		super.onCreate();
 
 		db = Database.build(this);
-		app = this;
 
 		AsyncHelper.init();
 
@@ -26,10 +25,5 @@ public class App extends Application {
 
 	public Database getDb() {
 		return db;
-	}
-
-	private static App app;
-	public static App get() {
-		return app;
 	}
 }

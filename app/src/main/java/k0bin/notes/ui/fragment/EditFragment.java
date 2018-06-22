@@ -78,7 +78,7 @@ public class EditFragment extends Fragment {
 			}
 		});
 
-		int noteId = EditFragmentArgs.fromBundle(getArguments()).getNoteId();
+		final int noteId = EditFragmentArgs.fromBundle(getArguments()).getNoteId();
 		viewModel.setNoteId(noteId);
 	}
 
