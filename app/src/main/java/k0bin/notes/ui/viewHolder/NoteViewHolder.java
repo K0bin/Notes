@@ -29,8 +29,18 @@ public class NoteViewHolder extends RecyclerView.ViewHolder {
 	}
 
 	public void bind(Note note) {
-		this.title.setText(note.getTitle());
-		this.text.setText(note.getText());
 		this.noteId = note.getId();
+
+		if (note.getTitle().length() == 0) {
+			this.title.setText(note.getText());
+			this.text.setVisibility(View.GONE);
+		} else if (note.getText().length() == 0) {
+			this.title.setText(note.getTitle());
+			this.text.setVisibility(View.GONE);
+		} else {
+			this.title.setText(note.getTitle());
+			this.text.setText(note.getText());
+			this.text.setVisibility(View.VISIBLE);
+		}
 	}
 }
