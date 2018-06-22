@@ -9,8 +9,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
+import java.util.List;
+
+import androidx.navigation.Navigation;
 import k0bin.notes.R;
+import k0bin.notes.model.Note;
 import k0bin.notes.ui.adapter.NotesAdapter;
 import k0bin.notes.viewModel.NotesViewModel;
 
@@ -25,16 +30,10 @@ public class NotesFragment extends Fragment {
 	public NotesFragment() {}
 
 	@Override
-	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
+	public void onCreate(@Nullable Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 
 		viewModel = ViewModelProviders.of(this).get(NotesViewModel.class);
-		viewModel.getNotes().observe(this, it -> adapter.submitList(it));
-	}
-
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
 	}
 
 	@Override
@@ -52,8 +51,11 @@ public class NotesFragment extends Fragment {
 		adapter = new NotesAdapter();
 		recycler.setAdapter(adapter);
 
+		viewModel.getNotes().observe(this, adapter::submitList);
+
 		view.findViewById(R.id.fab).setOnClickListener(it -> {
-			//Navigation.findNavController(it).
+			EditFragmentArgs args = new EditFragmentArgs.Builder().build();
+			Navigation.findNavController(it).navigate(R.id.action_notesFragment_to_editFragment2, args.toBundle());
 		});
 	}
 }

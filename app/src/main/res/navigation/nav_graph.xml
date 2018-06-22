@@ -9,5 +9,19 @@
         android:id="@+id/notesFragment"
         android:name="k0bin.notes.ui.fragment.NotesFragment"
         android:label="fragment_notes"
-        tools:layout="@layout/fragment_notes"/>
+        tools:layout="@layout/fragment_notes">
+        <action
+            android:id="@+id/action_notesFragment_to_editFragment2"
+            app:destination="@id/editFragment"/>
+    </fragment>
+    <fragment
+        android:id="@+id/editFragment"
+        android:name="k0bin.notes.ui.fragment.EditFragment"
+        android:label="fragment_edit"
+        tools:layout="@layout/fragment_edit">
+        <argument
+            android:name="noteId"
+            android:defaultValue="0"
+            app:type="integer"/>
+    </fragment>
 </navigation>

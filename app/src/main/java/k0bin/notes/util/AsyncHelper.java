@@ -28,8 +28,10 @@ public final class AsyncHelper {
 					return;
 				}
 
-				CallbackInvokation callback = (CallbackInvokation)msg.obj;
-				callback.callback.apply(callback.args);
+				CallbackInvokation callback = (CallbackInvokation) msg.obj;
+				if (callback.callback != null) {
+					callback.callback.apply(callback.args);
+				}
 			}
 		};
 		executor = Executors.newScheduledThreadPool(2 * Runtime.getRuntime().availableProcessors());
@@ -38,6 +40,10 @@ public final class AsyncHelper {
 	public static <T, R> void runAsync(T args, Function<T, R> async, Function<CallbackArgs<T, R>, Void> callback) {
 		if (handler == null) {
 			throw new RuntimeException("AsyncHelper has not yet been initialized.");
+		}
+
+		if (async == null) {
+			throw new IllegalArgumentException("async must not be null.");
 		}
 
 		executor.submit(() -> {

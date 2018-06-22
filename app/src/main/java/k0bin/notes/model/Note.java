@@ -9,14 +9,14 @@ import java.util.Objects;
 
 @Entity(tableName = "notes")
 public class Note {
-	@PrimaryKey
+	@PrimaryKey(autoGenerate = true)
 	private int id;
 	private String title;
 	private String text;
 
 	@Ignore
 	public Note(@NonNull String title, @NonNull String text) {
-		this(-1, title, text);
+		this(0, title, text);
 	}
 
 	public Note(int id, @NonNull String title, @NonNull String text) {

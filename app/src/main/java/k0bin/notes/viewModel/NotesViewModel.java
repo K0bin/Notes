@@ -13,17 +13,16 @@ import k0bin.notes.model.Note;
 import k0bin.notes.model.NotesDao;
 
 public class NotesViewModel extends AndroidViewModel {
-	private Database db;
 	private NotesDao notesDao;
 	private LiveData<List<Note>> notes;
 
 	public NotesViewModel(@NonNull Application application) {
 		super(application);
 
-		db = ((App)application).getDb();
+		Database db = ((App) application).getDb();
 		notesDao = db.notesDao();
 
-		notes = notesDao.getNotes();
+		notes = notesDao.getAll();
 	}
 
 	public LiveData<List<Note>> getNotes() {
