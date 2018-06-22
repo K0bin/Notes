@@ -13,13 +13,13 @@ import k0bin.notes.model.NotesDao;
 import k0bin.notes.util.AsyncHelper;
 
 public class EditViewModel extends AndroidViewModel {
-	private NotesDao notesDao;
-	private MutableLiveData<Integer> noteId = new MutableLiveData<>();
+	private final NotesDao notesDao;
+	private final MutableLiveData<Integer> noteId = new MutableLiveData<>();
 
-	private MutableLiveData<String> title = new MutableLiveData<>();
+	private final MutableLiveData<String> title = new MutableLiveData<>();
 	private boolean isTitleDirty = false;
 
-	private MutableLiveData<String> text = new MutableLiveData<>();
+	private final MutableLiveData<String> text = new MutableLiveData<>();
 	private boolean isTextDirty = false;
 
 	public EditViewModel(@NonNull Application application) {

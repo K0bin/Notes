@@ -13,8 +13,8 @@ import k0bin.notes.model.Note;
 import k0bin.notes.model.NotesDao;
 
 public class NotesViewModel extends AndroidViewModel {
-	private NotesDao notesDao;
-	private LiveData<List<Note>> notes;
+	private final NotesDao notesDao;
+	private final LiveData<List<Note>> notes;
 
 	public NotesViewModel(@NonNull Application application) {
 		super(application);

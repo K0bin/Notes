@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import k0bin.notes.R;
 import k0bin.notes.model.Note;
 import k0bin.notes.ui.viewHolder.NoteViewHolder;
+import k0bin.notes.viewModel.NotesViewModel;
 
 public class NotesAdapter extends ListAdapter<Note, NoteViewHolder> {
 	public NotesAdapter() {

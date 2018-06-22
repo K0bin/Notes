@@ -10,9 +10,9 @@ import java.util.Objects;
 @Entity(tableName = "notes")
 public class Note {
 	@PrimaryKey(autoGenerate = true)
-	private int id;
-	private String title;
-	private String text;
+	private final int id;
+	private final String title;
+	private final String text;
 
 	@Ignore
 	public Note(@NonNull String title, @NonNull String text) {
