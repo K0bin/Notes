@@ -1,7 +1,11 @@
-package k0bin.notes;
+package k0bin.notes.ui.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import k0bin.notes.R;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -9,5 +13,10 @@ public class MainActivity extends AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+	}
+
+	@Override
+	public boolean onSupportNavigateUp() {
+		return Navigation.findNavController(this, R.id.navHostFragment).navigateUp();
 	}
 }
