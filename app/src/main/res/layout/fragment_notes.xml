@@ -6,15 +6,40 @@
              android:layout_height="match_parent"
              tools:context=".ui.fragment.NotesFragment">
 
-        <android.support.design.bottomappbar.BottomAppBar
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#0000">
+
+        <android.support.design.widget.CollapsingToolbarLayout
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_gravity="bottom"
-            android:id="@+id/bar"
-            app:fabAttached="true"
-            app:backgroundTint="?attr/colorPrimary"
-            android:elevation="4dp"
-            />
+            android:layout_height="wrap_content"
+            app:layout_scrollFlags="scroll|enterAlwaysCollapsed|snap"
+            app:scrimAnimationDuration="0">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/notes"
+                android:id="@+id/header"
+                android:textAppearance="?attr/textAppearanceHeadline2"
+                app:layout_anchorGravity="top"
+                app:layout_insetEdge="top"
+                android:gravity="center_horizontal"
+                android:layout_margin="8dp"
+                />
+
+        </android.support.design.widget.CollapsingToolbarLayout>
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.design.bottomappbar.BottomAppBar
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_gravity="bottom"
+        android:id="@+id/bar"
+        app:fabAttached="true"
+        app:backgroundTint="?attr/colorPrimary"
+        android:elevation="4dp"
+        />
 
     <android.support.design.widget.FloatingActionButton
         android:layout_width="wrap_content"
@@ -32,6 +57,10 @@
         android:id="@+id/recycler"
         tools:listitem="@layout/view_note"
         tools:itemCount="11"
+        android:clipToPadding="false"
+        app:layout_anchorGravity="bottom"
+        android:padding="2dp"
+        app:layout_behavior="android.support.design.widget.AppBarLayout$ScrollingViewBehavior"
         />
 
 </android.support.design.widget.CoordinatorLayout>

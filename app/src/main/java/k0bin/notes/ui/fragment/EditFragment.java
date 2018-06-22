@@ -1,17 +1,22 @@
 package k0bin.notes.ui.fragment;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.bottomappbar.BottomAppBar;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
+import androidx.navigation.Navigation;
 import k0bin.notes.R;
 import k0bin.notes.model.Note;
 import k0bin.notes.viewModel.EditViewModel;
@@ -78,6 +83,9 @@ public class EditFragment extends Fragment {
 			}
 		});
 
+		final BottomAppBar bottomBar = view.findViewById(R.id.bottomBar);
+		bottomBar.setNavigationOnClickListener (button -> Navigation.findNavController(view).navigateUp());
+
 		final int noteId = EditFragmentArgs.fromBundle(getArguments()).getNoteId();
 		viewModel.setNoteId(noteId);
 	}
@@ -86,5 +94,18 @@ public class EditFragment extends Fragment {
 	public void onStop() {
 		super.onStop();
 		viewModel.save();
+        hideKeyboard();
 	}
+
+	private void hideKeyboard() {
+        if (getActivity() != null) {
+            final View view = getActivity().getCurrentFocus();
+            if (view != null) {
+                final InputMethodManager imm = ContextCompat.getSystemService(getActivity(), InputMethodManager.class);
+                if (imm != null) {
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                }
+            }
+        }
+    }
 }

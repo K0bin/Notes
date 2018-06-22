@@ -76,11 +76,21 @@ public class EditViewModel extends AndroidViewModel {
 		if (!isTitleDirty && !isTextDirty) {
 			return;
 		}
+		final int noteId = this.noteId.getValue() != null ? this.noteId.getValue() : 0;
+		final String title = this.title.getValue() != null ? this.title.getValue().trim() : "";
+		final String text = this.text.getValue() != null ? this.text.getValue().trim() : "";
+
 		AsyncHelper.runAsync(() -> {
-			if (noteId.getValue() != 0) {
-				notesDao.update(new Note(noteId.getValue(), title.getValue(), text.getValue()));
+			if (noteId != 0) {
+				if (title.length() > 0 || text.length() > 0) {
+					notesDao.update(new Note(noteId, title, text));
+				} else {
+					notesDao.delete(noteId);
+				}
 			} else {
-				notesDao.insert(new Note(0, title.getValue(), text.getValue()));
+				if (title.length() > 0 || text.length() > 0) {
+					notesDao.insert(new Note(0, title, text));
+				}
 			}
 		});
 		isTitleDirty = false;
