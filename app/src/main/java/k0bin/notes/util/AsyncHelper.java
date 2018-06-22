@@ -5,9 +5,7 @@ import android.arch.core.util.Function;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.util.Pair;
 
-import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -61,31 +59,13 @@ public final class AsyncHelper {
 		runAsync(null, arg -> { async.run(); return null; });
 	}
 
-	public static class CallbackArgs<T, R> {
+	private static class CallbackArgs<T, R> {
 		private T args;
 		private R result;
 
 		private CallbackArgs(T args, R result) {
 			this.args = args;
 			this.result = result;
-		}
-
-		public T getArgs() {
-			return args;
-		}
-
-		public R getResult() {
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			return obj == this || obj instanceof CallbackArgs && ((CallbackArgs)obj).args.equals(args) && ((CallbackArgs)obj).result.equals(result);
-		}
-
-		@Override
-		public int hashCode() {
-			return Objects.hash(args, result);
 		}
 	}
 
