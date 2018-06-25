@@ -39,6 +39,7 @@ dependencies {
     implementation 'android.arch.navigation:navigation-fragment:1.0.0-alpha02' //no androidx equivalent yet .__.
     implementation 'android.arch.navigation:navigation-ui:1.0.0-alpha02' //no androidx equivalent yet .__.
     implementation 'com.android.support:design:28.0.0-alpha3' //com.google.android.material:material
+    implementation 'net.sourceforge.streamsupport:android-retrostreams:1.6.3'
     implementation 'com.facebook.stetho:stetho:1.5.0'
     testImplementation 'junit:junit:4.12'
 }

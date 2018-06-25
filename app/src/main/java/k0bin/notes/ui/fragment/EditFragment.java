@@ -1,11 +1,14 @@
 package k0bin.notes.ui.fragment;
 
+import android.annotation.SuppressLint;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.bottomappbar.BottomAppBar;
+import android.support.design.chip.Chip;
+import android.support.design.chip.ChipGroup;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
@@ -15,8 +18,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 import androidx.navigation.Navigation;
+import java9.util.stream.StreamSupport;
 import k0bin.notes.R;
 import k0bin.notes.model.Note;
 import k0bin.notes.viewModel.EditViewModel;
@@ -42,7 +47,7 @@ public class EditFragment extends Fragment {
 		return inflater.inflate(R.layout.fragment_edit, container, false);
 	}
 
-	@Override
+    @Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 
@@ -82,6 +87,23 @@ public class EditFragment extends Fragment {
 				viewModel.setText(editable.toString());
 			}
 		});
+
+        final EditText labelText = view.findViewById(R.id.tagInput);
+
+		final ImageView addTagButton = view.findViewById(R.id.addTagButton);
+		addTagButton.setOnClickListener(v -> viewModel.addTag(labelText.getText().toString()));
+
+		final ChipGroup tagGroup = view.findViewById(R.id.tagChips);
+		viewModel.getTags().observe(this, tags -> {
+		    tagGroup.removeAllViews();
+		    if (tags == null) {
+		        return;
+            }
+            StreamSupport.stream(tags).forEachOrdered(tag -> {
+                final Chip chipView = new Chip(tagGroup.getContext());
+                chipView.setLayoutParams(new ChipGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            });
+        });
 
 		final BottomAppBar bottomBar = view.findViewById(R.id.bottomBar);
 		bottomBar.setNavigationOnClickListener (button -> Navigation.findNavController(view).navigateUp());

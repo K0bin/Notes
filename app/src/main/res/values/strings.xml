@@ -3,4 +3,6 @@
     <string name="notes">Notes</string>
     <string name="note_title">Title</string>
     <string name="note_text">Text</string>
+    <string name="note_tag">Tag</string>
+    <string name="note_tag_add_description">Add Tag</string>
 </resources>

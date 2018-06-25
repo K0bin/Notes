@@ -1,5 +1,6 @@
 package k0bin.notes.model;
 
+import android.arch.persistence.room.Embedded;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
@@ -11,7 +12,9 @@ import java.util.Objects;
 public class Note {
 	@PrimaryKey(autoGenerate = true)
 	private final int id;
+	@NonNull
 	private final String title;
+	@NonNull
 	private final String text;
 
 	@Ignore
@@ -29,17 +32,34 @@ public class Note {
 		return id;
 	}
 
+    @NonNull
 	public String getTitle() {
 		return title;
 	}
 
+    @NonNull
 	public String getText() {
 		return text;
 	}
 
+    @NonNull
 	@Override
-	public boolean equals(Object obj) {
-		return obj == this || obj instanceof Note && this.id == ((Note)obj).id && this.title.equals(((Note)obj).title) && this.text.equals(((Note)obj).text);
+	public String toString() {
+		return "Note{" +
+				"id=" + id +
+				", title='" + title + '\'' +
+				", text='" + text + '\'' +
+				'}';
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Note note = (Note) o;
+		return id == note.id &&
+				Objects.equals(title, note.title) &&
+				Objects.equals(text, note.text);
 	}
 
 	@Override

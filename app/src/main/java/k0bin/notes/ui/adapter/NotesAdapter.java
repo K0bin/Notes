@@ -8,10 +8,11 @@ import android.view.ViewGroup;
 
 import k0bin.notes.R;
 import k0bin.notes.model.Note;
+import k0bin.notes.model.NoteWithTags;
 import k0bin.notes.ui.viewHolder.NoteViewHolder;
 import k0bin.notes.viewModel.NotesViewModel;
 
-public class NotesAdapter extends ListAdapter<Note, NoteViewHolder> {
+public class NotesAdapter extends ListAdapter<NoteWithTags, NoteViewHolder> {
 	public NotesAdapter() {
 		super(DIFF_CALLBACK);
 
@@ -26,22 +27,22 @@ public class NotesAdapter extends ListAdapter<Note, NoteViewHolder> {
 
 	@Override
 	public void onBindViewHolder(@NonNull NoteViewHolder noteViewHolder, int position) {
-		noteViewHolder.bind(getItem(position));
+		noteViewHolder.bind(getItem(position).getNote());
 	}
 
 	@Override
 	public long getItemId(int position) {
-		return getItem(position).getId();
+		return getItem(position).getNote().getId();
 	}
 
-	private static final DiffUtil.ItemCallback<Note> DIFF_CALLBACK = new DiffUtil.ItemCallback<Note>() {
+	private static final DiffUtil.ItemCallback<NoteWithTags> DIFF_CALLBACK = new DiffUtil.ItemCallback<NoteWithTags>() {
 		@Override
-		public boolean areItemsTheSame(@NonNull Note note1, @NonNull Note note2) {
-			return note1.getId() == note2.getId();
+		public boolean areItemsTheSame(@NonNull NoteWithTags note1, @NonNull NoteWithTags note2) {
+			return note1.getNote().getId() == note2.getNote().getId();
 		}
 
 		@Override
-		public boolean areContentsTheSame(@NonNull Note note1, @NonNull Note note2) {
+		public boolean areContentsTheSame(@NonNull NoteWithTags note1, @NonNull NoteWithTags note2) {
 			return note1.equals(note2);
 		}
 	};

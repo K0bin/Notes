@@ -44,7 +44,7 @@
             android:layout_height="0dp"
             android:id="@+id/textEdit"
             app:layout_constraintTop_toBottomOf="@id/titleEdit"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/tags"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:hint="@string/note_text"
@@ -53,6 +53,45 @@
             android:importantForAutofill="no"
             android:gravity="top|start"
             android:inputType="textMultiLine"/>
+
+        <android.support.v4.widget.NestedScrollView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:id="@+id/tags">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <EditText
+                    android:layout_width="128dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="clip_vertical"
+                    android:hint="@string/note_tag"
+                    android:id="@+id/tagInput"
+                    android:inputType="text"
+                    android:importantForAutofill="no"
+                    />
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerInside"
+                    android:layout_gravity="clip_vertical"
+                    android:id="@+id/addTagButton"
+                    android:src="@drawable/ic_add_circle_outline_white_24dp"
+                    android:contentDescription="@string/note_tag_add_description"
+                    />
+                <android.support.design.chip.ChipGroup
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:id="@+id/tagChips"
+                    android:layout_gravity="clip_vertical"
+                    app:singleLine="true"
+                    />
+            </LinearLayout>
+        </android.support.v4.widget.NestedScrollView>
     </android.support.constraint.ConstraintLayout>
 
     <android.support.design.bottomappbar.BottomAppBar

@@ -1,7 +1,6 @@
 package k0bin.notes.util;
 
 
-import android.arch.core.util.Function;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -28,14 +27,14 @@ public final class AsyncHelper {
 
 				CallbackInvokation callback = (CallbackInvokation) msg.obj;
 				if (callback.callback != null) {
-					callback.callback.apply(callback.args);
+					callback.callback.run(callback.result);
 				}
 			}
 		};
 		executor = Executors.newScheduledThreadPool(2 * Runtime.getRuntime().availableProcessors());
 	}
 
-	public static <T, R> void runAsync(T args, Function<T, R> async, Function<CallbackArgs<T, R>, Void> callback) {
+	public static <R> void runAsync(ReturnRunnable<R> async, ArgumentRunnable<R> callback) {
 		if (executor == null || handler == null) {
 			throw new RuntimeException("AsyncHelper has not yet been initialized.");
 		}
@@ -45,37 +44,37 @@ public final class AsyncHelper {
 		}
 
 		executor.submit(() -> {
-			R result = async.apply(args);
-			Message message = handler.obtainMessage(TASK_COMPLETE, new CallbackInvokation(new CallbackArgs<>(args, result), callback));
-			message.sendToTarget();
+		    try {
+                R result = async.run();
+                if (callback != null) {
+                    Message message = handler.obtainMessage(TASK_COMPLETE, new CallbackInvokation(result, callback));
+                    message.sendToTarget();
+                }
+            } catch (Exception e) {
+		        throw new RuntimeException(e);
+            }
 		});
 	}
 
-	public static <T> void runAsync(T args, Function<T, Void> async) {
-		runAsync(args, async, null);
-	}
-
 	public static void runAsync(Runnable async) {
-		runAsync(null, arg -> { async.run(); return null; });
+		runAsync(() -> { async.run(); return null; }, null);
 	}
 
-	private static class CallbackArgs<T, R> {
-		private T args;
+	private static class CallbackInvokation<R> {
 		private R result;
+		private ArgumentRunnable<R> callback;
 
-		private CallbackArgs(T args, R result) {
-			this.args = args;
+		private CallbackInvokation(R result, ArgumentRunnable<R> callback) {
 			this.result = result;
-		}
-	}
-
-	private static class CallbackInvokation<T, R> {
-		private CallbackArgs<T, R> args;
-		private Function<CallbackArgs<T, R>, Void> callback;
-
-		private CallbackInvokation(CallbackArgs<T, R> args, Function<CallbackArgs<T, R>, Void> callback) {
-			this.args = args;
 			this.callback = callback;
 		}
 	}
+
+	public interface ArgumentRunnable<T> {
+	    void run(T arg);
+    }
+
+    public interface ReturnRunnable<R> {
+        R run();
+    }
 }
