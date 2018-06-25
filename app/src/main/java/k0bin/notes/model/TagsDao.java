@@ -5,7 +5,6 @@ import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
-import android.arch.persistence.room.Transaction;
 import android.arch.persistence.room.Update;
 
 import java.util.List;
@@ -42,6 +41,9 @@ public interface TagsDao {
     @Insert()
     void insertToNote(NoteTag noteTag);
 
-    @Query("SELECT * FROM noteTags WHERE noteId=:noteId")
-    LiveData<List<NoteTag>> getForNote(int noteId);
+    @Query("SELECT t.* FROM tags t LEFT JOIN noteTags nt ON nt.tagName = t.name WHERE nt.noteId=:noteId")
+    LiveData<List<Tag>> getForNote(int noteId);
+
+    @Query("SELECT * FROM noteTags")
+    LiveData<List<NoteTag>> getAllNoteTags();
 }

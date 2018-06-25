@@ -10,13 +10,9 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-
-import java.util.List;
 
 import androidx.navigation.Navigation;
 import k0bin.notes.R;
-import k0bin.notes.model.Note;
 import k0bin.notes.ui.adapter.NotesAdapter;
 import k0bin.notes.viewModel.NotesViewModel;
 

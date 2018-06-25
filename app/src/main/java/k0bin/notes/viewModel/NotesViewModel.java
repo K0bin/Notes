@@ -15,14 +15,22 @@ import java9.util.stream.Collectors;
 import java9.util.stream.StreamSupport;
 import k0bin.notes.App;
 import k0bin.notes.model.Database;
+import k0bin.notes.model.Note;
+import k0bin.notes.model.NoteTag;
 import k0bin.notes.model.NoteWithTags;
 import k0bin.notes.model.NotesDao;
 import k0bin.notes.model.Tag;
+import k0bin.notes.model.TagsDao;
 import k0bin.notes.util.AsyncHelper;
 
 public class NotesViewModel extends AndroidViewModel {
 	private final NotesDao notesDao;
-	private final MutableLiveData<List<NoteWithTags>> notes = new MutableLiveData<>();
+    private final TagsDao tagsDao;
+	private final LiveData<List<Note>> notes;
+    private final LiveData<List<Tag>> tags;
+    private final LiveData<List<NoteTag>> noteTags;
+
+	private final MutableLiveData<List<NoteWithTags>> notesWithTags = new MutableLiveData<>();
 	private final Set<Tag> filter = new HashSet<>();
 
 	@SuppressLint("NewApi")
@@ -31,26 +39,44 @@ public class NotesViewModel extends AndroidViewModel {
 
 		final Database db = ((App) application).getDb();
 		notesDao = db.notesDao();
+		tagsDao = db.tagsDao();
 
-		notesDao.getAllWithTags().observeForever(it -> {
-		    if (it == null) {
-		        return;
-            }
-            notes.setValue(StreamSupport.stream(it)
-                    .filter(note -> note
-                                    .getNoteTags()
-                                    .containsAll(filter))
-                    .collect(Collectors.toList())
-            );
-        });
+		notes = notesDao.getAll();
+		tags = tagsDao.getAll();
+		noteTags = tagsDao.getAllNoteTags();
+
+		notes.observeForever(it -> updateNotesWithTags());
+        tags.observeForever(it -> updateNotesWithTags());
+        noteTags.observeForever(it -> updateNotesWithTags());
 	}
 
+	private void updateNotesWithTags() {
+	    if (notes.getValue() == null || tags.getValue() == null || noteTags.getValue() == null) {
+	        return;
+        }
+
+        List<NoteWithTags> newNotesWithTags = StreamSupport.stream(notes.getValue())
+                .map(n -> {
+                    Set<Tag> tags = StreamSupport.stream(noteTags.getValue())
+                            .filter(nt -> nt.getNoteId() == n.getId())
+                            .map(
+                                    nt -> StreamSupport.stream(this.tags.getValue())
+                                            .filter(t -> t.getName().equals(nt.getTagName()))
+                                            .findFirst().get()
+                            )
+                            .collect(Collectors.toSet());
+
+                    return new NoteWithTags(n, tags);
+                }).collect(Collectors.toList());
+        notesWithTags.setValue(newNotesWithTags);
+    }
+
 	public LiveData<List<NoteWithTags>> getNotes() {
-		return notes;
+		return notesWithTags;
 	}
 
 	public void deleteNote(int position) {
-		final List<NoteWithTags> notes = this.notes.getValue();
+		final List<NoteWithTags> notes = this.notesWithTags.getValue();
 		if (notes == null) {
 			throw new IllegalStateException("No notes loaded");
 		}

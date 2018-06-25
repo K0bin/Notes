@@ -30,11 +30,4 @@ public interface NotesDao {
 
 	@Query("DELETE FROM notes WHERE id=:id")
 	void delete(int id);
-
-	@Transaction
-    @Query("SELECT * from notes")
-	LiveData<List<NoteWithTags>> getAllWithTags();
-
-	@Query("SELECT * FROM notes WHERE id=:id")
-	LiveData<NoteWithTags> getByIdWithTags(int id);
 }

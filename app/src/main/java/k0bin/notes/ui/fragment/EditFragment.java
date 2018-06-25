@@ -1,8 +1,6 @@
 package k0bin.notes.ui.fragment;
 
-import android.annotation.SuppressLint;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -23,7 +21,6 @@ import android.widget.ImageView;
 import androidx.navigation.Navigation;
 import java9.util.stream.StreamSupport;
 import k0bin.notes.R;
-import k0bin.notes.model.Note;
 import k0bin.notes.viewModel.EditViewModel;
 
 public class EditFragment extends Fragment {
@@ -50,6 +47,10 @@ public class EditFragment extends Fragment {
     @Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
+
+		Bundle arguments = getArguments();
+	    final int noteId = EditFragmentArgs.fromBundle(arguments != null ? arguments : Bundle.EMPTY).getNoteId();
+	    viewModel.setNoteId(noteId);
 
 		titleEdit = view.findViewById(R.id.titleEdit);
 		viewModel.getTitle().observe(this, text -> {
@@ -91,7 +92,10 @@ public class EditFragment extends Fragment {
         final EditText labelText = view.findViewById(R.id.tagInput);
 
 		final ImageView addTagButton = view.findViewById(R.id.addTagButton);
-		addTagButton.setOnClickListener(v -> viewModel.addTag(labelText.getText().toString()));
+		addTagButton.setOnClickListener(v -> {
+            viewModel.addTag(labelText.getText().toString());
+            labelText.setText("");
+        });
 
 		final ChipGroup tagGroup = view.findViewById(R.id.tagChips);
 		viewModel.getTags().observe(this, tags -> {
@@ -100,16 +104,15 @@ public class EditFragment extends Fragment {
 		        return;
             }
             StreamSupport.stream(tags).forEachOrdered(tag -> {
-                final Chip chipView = new Chip(tagGroup.getContext());
-                chipView.setLayoutParams(new ChipGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                final Chip tagView = new Chip(tagGroup.getContext());
+                tagView.setLayoutParams(new ChipGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                tagView.setText(tag.getName());
+                tagGroup.addView(tagView);
             });
         });
 
 		final BottomAppBar bottomBar = view.findViewById(R.id.bottomBar);
 		bottomBar.setNavigationOnClickListener (button -> Navigation.findNavController(view).navigateUp());
-
-		final int noteId = EditFragmentArgs.fromBundle(getArguments()).getNoteId();
-		viewModel.setNoteId(noteId);
 	}
 
 	@Override

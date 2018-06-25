@@ -1,32 +1,27 @@
 package k0bin.notes.model;
 
-import android.arch.persistence.room.Embedded;
-import android.arch.persistence.room.Relation;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
-import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 public class NoteWithTags {
-    @Embedded private Note note;
+    private Note note;
+    private Set<Tag> tags;
 
-    @Relation(parentColumn = "id", entityColumn = "noteId")
-    private List<NoteTag> noteTags;
-
-    public NoteWithTags(@NonNull Note note) {
+    public NoteWithTags(@NonNull Note note, @Nullable Set<Tag> tags) {
         this.note = note;
+        this.tags = tags != null ? tags : new HashSet<>();
     }
 
     public Note getNote() {
         return note;
     }
 
-    public List<NoteTag> getNoteTags() {
-        return noteTags;
-    }
-
-    public void setNoteTags(List<NoteTag> noteTags) {
-        this.noteTags = noteTags;
+    public Set<Tag> getTags() {
+        return tags;
     }
 
     @Override
@@ -35,19 +30,19 @@ public class NoteWithTags {
         if (o == null || getClass() != o.getClass()) return false;
         NoteWithTags that = (NoteWithTags) o;
         return Objects.equals(note, that.note) &&
-                Objects.equals(noteTags, that.noteTags);
+                Objects.equals(tags, that.tags);
     }
 
     @Override
     public String toString() {
         return "NoteWithTags{" +
                 "note=" + note +
-                ", noteTags=" + noteTags +
+                ", tags=" + tags +
                 '}';
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(note, noteTags);
+        return Objects.hash(note, tags);
     }
 }

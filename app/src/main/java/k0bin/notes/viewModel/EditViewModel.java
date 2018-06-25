@@ -1,17 +1,16 @@
 package k0bin.notes.viewModel;
 
 import android.app.Application;
-import android.arch.core.util.Function;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.Transformations;
-import android.arch.persistence.room.Update;
 import android.support.annotation.NonNull;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Callable;
 
 import k0bin.notes.App;
 import k0bin.notes.model.Database;
@@ -35,6 +34,9 @@ public class EditViewModel extends AndroidViewModel {
 	private boolean isTextDirty = false;
 
 	private final MutableLiveData<Set<Tag>> tags = new MutableLiveData<>();
+    private boolean areTagsDirty = false;
+    private LiveData<List<Tag>> dbTags;
+    private final Observer<List<Tag>> dbTagsObserver;
 
 	public EditViewModel(@NonNull Application application) {
 		super(application);
@@ -44,10 +46,13 @@ public class EditViewModel extends AndroidViewModel {
 		tagsDao = db.tagsDao();
 		noteId.setValue(-1);
 
-        tags.setValue(new HashSet<>());
+		dbTagsObserver = tags -> {
+		    if (!areTagsDirty) {
+                this.tags.setValue(tags != null ? new HashSet<>(tags) : new HashSet<>());
+            }
+        };
 
-		Transformations.switchMap(noteId, notesDao::getByIdWithTags).observeForever(noteWithTags -> {
-			Note note = noteWithTags != null ? noteWithTags.getNote() : null;
+		Transformations.switchMap(noteId, notesDao::getById).observeForever(note -> {
 			if (note == null) {
 				text.setValue("");
 				title.setValue("");
@@ -60,13 +65,23 @@ public class EditViewModel extends AndroidViewModel {
 				text.setValue(note.getText());
 			}
 		});
+
 	}
 
 	public void setNoteId(int noteId) {
-		this.noteId.setValue(noteId);
+	    if (this.noteId.getValue() == null || noteId != this.noteId.getValue()) {
+	        save();
+
+            this.noteId.setValue(noteId);
+            if (this.dbTags != null) {
+                this.dbTags.removeObserver(dbTagsObserver);
+            }
+            this.dbTags = tagsDao.getForNote(noteId);
+            this.dbTags.observeForever(dbTagsObserver);
+        }
 	}
 
-	public MutableLiveData<String> getTitle() {
+	public LiveData<String> getTitle() {
 		return title;
 	}
 
@@ -78,11 +93,11 @@ public class EditViewModel extends AndroidViewModel {
 		isTitleDirty = true;
 	}
 
-	public MutableLiveData<String> getText() {
+	public LiveData<String> getText() {
 		return text;
 	}
 
-    public MutableLiveData<Set<Tag>> getTags() {
+    public LiveData<Set<Tag>> getTags() {
         return tags;
     }
 
@@ -104,9 +119,9 @@ public class EditViewModel extends AndroidViewModel {
 	        return;
         }
 
-	    final Set<Tag> tags = this.tags.getValue();
-	    if (tags == null) {
-	        return;
+        final Set<Tag> tags = this.tags.getValue();
+        if (tags == null) {
+            return;
         }
         final Set<Tag> newTags = new HashSet<>(tags);
 
@@ -121,6 +136,7 @@ public class EditViewModel extends AndroidViewModel {
             }
             return tag;
         }, tag -> {
+            areTagsDirty = true;
             newTags.add(tag);
             EditViewModel.this.tags.setValue(newTags);
         });
@@ -132,8 +148,10 @@ public class EditViewModel extends AndroidViewModel {
             return;
         }
         final Set<Tag> newTags = new HashSet<>(tags);
+        areTagsDirty = true;
         newTags.remove(tag);
         this.tags.setValue(newTags);
+
         AsyncHelper.runAsync(() -> {
             if (noteId.getValue() != null && noteId.getValue() != 0) {
                 tagsDao.deleteFromNote(noteId.getValue(), tag.getName());
@@ -168,5 +186,6 @@ public class EditViewModel extends AndroidViewModel {
 		});
 		isTitleDirty = false;
 		isTextDirty = false;
+		areTagsDirty = false;
 	}
 }
