@@ -16,16 +16,16 @@ import java.util.Objects;
         },
         indices = { @Index("noteId"), @Index("tagName")})
 public class NoteTag {
-    private int noteId;
+    private long noteId;
     @NonNull
     private String tagName;
 
-    public NoteTag(int noteId, @NonNull String tagName) {
+    public NoteTag(long noteId, @NonNull String tagName) {
         this.noteId = noteId;
         this.tagName = tagName;
     }
 
-    public int getNoteId() {
+    public long getNoteId() {
         return noteId;
     }
 

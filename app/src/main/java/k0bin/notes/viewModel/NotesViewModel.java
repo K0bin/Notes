@@ -67,7 +67,9 @@ public class NotesViewModel extends AndroidViewModel {
                             .collect(Collectors.toSet());
 
                     return new NoteWithTags(n, tags);
-                }).collect(Collectors.toList());
+                })
+                .filter(n -> n.getTags().containsAll(filter))
+                .collect(Collectors.toList());
         notesWithTags.setValue(newNotesWithTags);
     }
 

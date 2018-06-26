@@ -21,7 +21,7 @@ public interface TagsDao {
     Tag getByNameSync(String name);
 
     @Insert()
-    void insert(Tag note);
+    long insert(Tag note);
 
     @Update()
     void update(Tag note);
@@ -36,13 +36,13 @@ public interface TagsDao {
     int countNotesWithTag(String tagName);
 
     @Query("DELETE FROM noteTags WHERE noteId=:noteId AND tagName=:tagName")
-    void deleteFromNote(int noteId, String tagName);
+    void deleteFromNote(long noteId, String tagName);
 
     @Insert()
     void insertToNote(NoteTag noteTag);
 
     @Query("SELECT t.* FROM tags t LEFT JOIN noteTags nt ON nt.tagName = t.name WHERE nt.noteId=:noteId")
-    LiveData<List<Tag>> getForNote(int noteId);
+    LiveData<List<Tag>> getForNote(long noteId);
 
     @Query("SELECT * FROM noteTags")
     LiveData<List<NoteTag>> getAllNoteTags();

@@ -17,10 +17,10 @@ public interface NotesDao {
 	LiveData<List<Note>> getAll();
 
 	@Query("SELECT * FROM notes WHERE id=:id")
-	LiveData<Note> getById(int id);
+	LiveData<Note> getById(long id);
 
 	@Insert()
-	void insert(Note note);
+	long insert(Note note);
 
 	@Update()
 	void update(Note note);
@@ -29,5 +29,5 @@ public interface NotesDao {
 	void delete(Note note);
 
 	@Query("DELETE FROM notes WHERE id=:id")
-	void delete(int id);
+	void delete(long id);
 }

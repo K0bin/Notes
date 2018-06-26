@@ -11,7 +11,7 @@ import java.util.Objects;
 @Entity(tableName = "notes")
 public class Note {
 	@PrimaryKey(autoGenerate = true)
-	private final int id;
+	private final long id;
 	@NonNull
 	private final String title;
 	@NonNull
@@ -19,16 +19,16 @@ public class Note {
 
 	@Ignore
 	public Note(@NonNull String title, @NonNull String text) {
-		this(0, title, text);
+		this(0L, title, text);
 	}
 
-	public Note(int id, @NonNull String title, @NonNull String text) {
+	public Note(long id, @NonNull String title, @NonNull String text) {
 		this.id = id;
 		this.title = title;
 		this.text = text;
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
