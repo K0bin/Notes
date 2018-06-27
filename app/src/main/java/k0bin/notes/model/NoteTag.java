@@ -1,6 +1,5 @@
 package k0bin.notes.model;
 
-import android.arch.lifecycle.ViewModelProvider;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.Index;

@@ -25,34 +25,34 @@ import k0bin.notes.model.TagsDao;
 import k0bin.notes.util.AsyncHelper;
 
 public class NotesViewModel extends AndroidViewModel {
-	private final NotesDao notesDao;
+    private final NotesDao notesDao;
     private final TagsDao tagsDao;
-	private final LiveData<List<Note>> notes;
+    private final LiveData<List<Note>> notes;
     private final LiveData<List<Tag>> tags;
     private final LiveData<List<NoteTag>> noteTags;
 
-	private final MutableLiveData<List<NoteWithTags>> notesWithTags = new MutableLiveData<>();
-	private final Set<Tag> filter = new HashSet<>();
+    private final MutableLiveData<List<NoteWithTags>> notesWithTags = new MutableLiveData<>();
+    private final Set<Tag> filter = new HashSet<>();
 
-	private boolean isNoteUpdateQueued = false;
-	private final Handler handler; //Used to delay updates coming from the database so we don't do 3 updates if all 3 tables are changed
+    private boolean isNoteUpdateQueued = false;
+    private final Handler handler; //Used to delay updates coming from the database so we don't do 3 updates if all 3 tables are changed
 
-	@SuppressLint("NewApi")
+    @SuppressLint("NewApi")
     public NotesViewModel(@NonNull Application application) {
-		super(application);
+        super(application);
 
-		handler = new Handler(application.getMainLooper());
+        handler = new Handler(application.getMainLooper());
 
-		final Database db = ((App) application).getDb();
-		notesDao = db.notesDao();
-		tagsDao = db.tagsDao();
+        final Database db = ((App) application).getDb();
+        notesDao = db.notesDao();
+        tagsDao = db.tagsDao();
 
-		notes = notesDao.getAll();
-		tags = tagsDao.getAll();
-		noteTags = tagsDao.getAllNoteTags();
+        notes = notesDao.getAll();
+        tags = tagsDao.getAll();
+        noteTags = tagsDao.getAllNoteTags();
 
-		notes.observeForever(it -> {
-		    if (!isNoteUpdateQueued) {
+        notes.observeForever(it -> {
+            if (!isNoteUpdateQueued) {
                 isNoteUpdateQueued = true;
                 handler.post(this::updateNotesWithTags);
             }
@@ -69,11 +69,11 @@ public class NotesViewModel extends AndroidViewModel {
                 handler.post(this::updateNotesWithTags);
             }
         });
-	}
+    }
 
-	private void updateNotesWithTags() {
-	    if (notes.getValue() == null || tags.getValue() == null || noteTags.getValue() == null) {
-	        return;
+    private void updateNotesWithTags() {
+        if (notes.getValue() == null || tags.getValue() == null || noteTags.getValue() == null) {
+            return;
         }
 
         List<NoteWithTags> newNotesWithTags = StreamSupport.stream(notes.getValue())
@@ -85,7 +85,7 @@ public class NotesViewModel extends AndroidViewModel {
                                             .filter(t -> t.getName().equals(nt.getTagName()))
                                             .findFirst().orElse(null)
                             )
-		                    .filter(t -> t != null)
+                            .filter(t -> t != null)
                             .collect(Collectors.toSet());
 
                     return new NoteWithTags(n, tags);
@@ -97,27 +97,27 @@ public class NotesViewModel extends AndroidViewModel {
         isNoteUpdateQueued = false;
     }
 
-	public LiveData<List<NoteWithTags>> getNotes() {
-		return notesWithTags;
-	}
+    public LiveData<List<NoteWithTags>> getNotes() {
+        return notesWithTags;
+    }
 
-	public void deleteNote(int position) {
-		final List<NoteWithTags> notes = this.notesWithTags.getValue();
-		if (notes == null) {
-			throw new IllegalStateException("No notes loaded");
-		}
-		if (position < 0 || notes.size() <= position) {
-			throw new IndexOutOfBoundsException("position");
-		}
+    public void deleteNote(int position) {
+        final List<NoteWithTags> notes = this.notesWithTags.getValue();
+        if (notes == null) {
+            throw new IllegalStateException("No notes loaded");
+        }
+        if (position < 0 || notes.size() <= position) {
+            throw new IndexOutOfBoundsException("position");
+        }
 
-		AsyncHelper.runAsync(() -> notesDao.delete(notes.get(position).getNote()));
-	}
+        AsyncHelper.runAsync(() -> notesDao.delete(notes.get(position).getNote()));
+    }
 
-	public void addFilter(Tag tag) {
-	    filter.add(tag);
+    public void addFilter(Tag tag) {
+        filter.add(tag);
     }
 
     public void removeFilter(Tag tag) {
-	    filter.remove(tag);
+        filter.remove(tag);
     }
 }

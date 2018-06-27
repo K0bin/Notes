@@ -4,30 +4,28 @@ import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
-import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
-import android.arch.persistence.room.Transaction;
 import android.arch.persistence.room.Update;
 
 import java.util.List;
 
 @Dao
 public interface NotesDao {
-	@Query("SELECT * FROM notes")
-	LiveData<List<Note>> getAll();
+    @Query("SELECT * FROM notes")
+    LiveData<List<Note>> getAll();
 
-	@Query("SELECT * FROM notes WHERE id=:id")
-	LiveData<Note> getById(long id);
+    @Query("SELECT * FROM notes WHERE id=:id")
+    LiveData<Note> getById(long id);
 
-	@Insert()
-	long insert(Note note);
+    @Insert()
+    long insert(Note note);
 
-	@Update()
-	void update(Note note);
+    @Update()
+    void update(Note note);
 
-	@Delete()
-	void delete(Note note);
+    @Delete()
+    void delete(Note note);
 
-	@Query("DELETE FROM notes WHERE id=:id")
-	void delete(long id);
+    @Query("DELETE FROM notes WHERE id=:id")
+    void delete(long id);
 }

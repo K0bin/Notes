@@ -8,22 +8,22 @@ import k0bin.notes.model.Database;
 import k0bin.notes.util.AsyncHelper;
 
 public class App extends Application {
-	private Database db;
+    private Database db;
 
-	@Override
-	public void onCreate() {
-		super.onCreate();
+    @Override
+    public void onCreate() {
+        super.onCreate();
 
-		db = Database.build(this);
+        db = Database.build(this);
 
-		AsyncHelper.init();
+        AsyncHelper.init();
 
-		if (BuildConfig.DEBUG) {
-			Stetho.initializeWithDefaults(this);
-		}
-	}
+        if (BuildConfig.DEBUG) {
+            Stetho.initializeWithDefaults(this);
+        }
+    }
 
-	public Database getDb() {
-		return db;
-	}
+    public Database getDb() {
+        return db;
+    }
 }

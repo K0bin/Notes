@@ -25,91 +25,91 @@ import k0bin.notes.model.Tag;
 import k0bin.notes.viewModel.EditViewModel;
 
 public class EditFragment extends Fragment {
-	private EditViewModel viewModel;
+    private EditViewModel viewModel;
 
-	private EditText titleEdit;
-	private EditText textEdit;
+    private EditText titleEdit;
+    private EditText textEdit;
 
-	public EditFragment() {	}
-
-	@Override
-	public void onCreate(@Nullable Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
-		viewModel = ViewModelProviders.of(this).get(EditViewModel.class);
-	}
-
-	@Nullable
-	@Override
-	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.fragment_edit, container, false);
-	}
+    public EditFragment() {    }
 
     @Override
-	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		Bundle arguments = getArguments();
-	    final int noteId = EditFragmentArgs.fromBundle(arguments != null ? arguments : Bundle.EMPTY).getNoteId();
-	    viewModel.setNoteId(noteId);
+        viewModel = ViewModelProviders.of(this).get(EditViewModel.class);
+    }
 
-		titleEdit = view.findViewById(R.id.titleEdit);
-		viewModel.getTitle().observe(this, text -> {
-			if (titleEdit.getText().toString().equals(text)) {
-				return;
-			}
-			titleEdit.setText(text);
-		});
-		titleEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_edit, container, false);
+    }
 
-			@Override
-			public void afterTextChanged(Editable editable) {
-				viewModel.setTitle(editable.toString());
-			}
-		});
-		textEdit = view.findViewById(R.id.textEdit);
-		viewModel.getText().observe(this,  text -> {
-			if (textEdit.getText().toString().equals(text)) {
-				return;
-			}
-			textEdit.setText(text);
-		});
-		textEdit.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-			@Override
-			public void afterTextChanged(Editable editable) {
-				viewModel.setText(editable.toString());
-			}
-		});
+        Bundle arguments = getArguments();
+        final int noteId = EditFragmentArgs.fromBundle(arguments != null ? arguments : Bundle.EMPTY).getNoteId();
+        viewModel.setNoteId(noteId);
+
+        titleEdit = view.findViewById(R.id.titleEdit);
+        viewModel.getTitle().observe(this, text -> {
+            if (titleEdit.getText().toString().equals(text)) {
+                return;
+            }
+            titleEdit.setText(text);
+        });
+        titleEdit.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                viewModel.setTitle(editable.toString());
+            }
+        });
+        textEdit = view.findViewById(R.id.textEdit);
+        viewModel.getText().observe(this,  text -> {
+            if (textEdit.getText().toString().equals(text)) {
+                return;
+            }
+            textEdit.setText(text);
+        });
+        textEdit.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                viewModel.setText(editable.toString());
+            }
+        });
 
         final EditText labelText = view.findViewById(R.id.tagInput);
 
-		final ImageView addTagButton = view.findViewById(R.id.addTagButton);
-		addTagButton.setOnClickListener(v -> {
+        final ImageView addTagButton = view.findViewById(R.id.addTagButton);
+        addTagButton.setOnClickListener(v -> {
             viewModel.addTag(labelText.getText().toString());
             labelText.setText("");
         });
 
-		final View.OnClickListener onTagClicked = v -> {
-		    final Object viewTag = v.getTag();
-		    if (viewTag instanceof Tag) {
+        final View.OnClickListener onTagClicked = v -> {
+            final Object viewTag = v.getTag();
+            if (viewTag instanceof Tag) {
                 viewModel.removeTag((Tag)viewTag);
             }
         };
 
-		final ChipGroup tagGroup = view.findViewById(R.id.tagChips);
-		viewModel.getTags().observe(this, tags -> {
-		    tagGroup.removeAllViews();
-		    if (tags == null) {
-		        return;
+        final ChipGroup tagGroup = view.findViewById(R.id.tagChips);
+        viewModel.getTags().observe(this, tags -> {
+            tagGroup.removeAllViews();
+            if (tags == null) {
+                return;
             }
             StreamSupport.stream(tags).sorted().forEachOrdered(tag -> {
                 final Chip tagView = new Chip(tagGroup.getContext());
@@ -121,18 +121,18 @@ public class EditFragment extends Fragment {
             });
         });
 
-		final BottomAppBar bottomBar = view.findViewById(R.id.bottomBar);
-		bottomBar.setNavigationOnClickListener (button -> Navigation.findNavController(view).navigateUp());
-	}
+        final BottomAppBar bottomBar = view.findViewById(R.id.bottomBar);
+        bottomBar.setNavigationOnClickListener (button -> Navigation.findNavController(view).navigateUp());
+    }
 
-	@Override
-	public void onStop() {
-		super.onStop();
-		viewModel.save();
+    @Override
+    public void onStop() {
+        super.onStop();
+        viewModel.save();
         hideKeyboard();
-	}
+    }
 
-	private void hideKeyboard() {
+    private void hideKeyboard() {
         if (getActivity() != null) {
             final View view = getActivity().getCurrentFocus();
             if (view != null) {
