@@ -23,7 +23,7 @@ public interface TagsDao {
     @Delete()
     void delete(Tag note);
 
-    @Query("SELECT * FROM tags t LEFT JOIN noteTags nt ON nt.tagName = t.name WHERE nt.tagName IS NULL")
+    @Query("SELECT t.* FROM tags t LEFT JOIN noteTags nt ON nt.tagName = t.name WHERE nt.tagName IS NULL")
     List<Tag> getUnusedTags();
 
     @Query("DELETE FROM noteTags WHERE noteId=:noteId")

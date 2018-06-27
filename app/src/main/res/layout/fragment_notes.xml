@@ -35,10 +35,11 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_gravity="bottom"
-        android:id="@+id/bar"
+        android:id="@+id/bottomBar"
         app:fabAttached="true"
         app:backgroundTint="?attr/colorPrimary"
         android:elevation="4dp"
+        app:navigationIcon="@drawable/ic_menu_white_24dp"
         />
 
     <android.support.design.widget.FloatingActionButton
@@ -46,7 +47,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/fab"
         android:src="@drawable/ic_add_black_24dp"
-        app:layout_anchor="@id/bar"/>
+        app:layout_anchor="@id/bottomBar"/>
 
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"

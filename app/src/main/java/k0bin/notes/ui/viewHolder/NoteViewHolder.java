@@ -27,7 +27,7 @@ public class NoteViewHolder extends RecyclerView.ViewHolder {
         });
     }
 
-    public void bind(Note note) {
+    public void bind(@NonNull Note note) {
         this.noteId = note.getId();
 
         if (note.getTitle().length() == 0) {

@@ -4,7 +4,10 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.bottomappbar.BottomAppBar;
+import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
@@ -21,8 +24,9 @@ import k0bin.notes.viewModel.NotesViewModel;
  * Fragment that lists all notes
  */
 public class NotesFragment extends Fragment {
-    private NotesAdapter adapter;
     private NotesViewModel viewModel;
+
+    private DrawerDialogFragment fragment;
 
     public NotesFragment() {}
 
@@ -30,7 +34,10 @@ public class NotesFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        viewModel = ViewModelProviders.of(this).get(NotesViewModel.class);
+        if (getActivity() == null) {
+            throw new IllegalStateException("Something went wrong, Activity must not be null here");
+        }
+        viewModel = ViewModelProviders.of(getActivity()).get(NotesViewModel.class);
     }
 
     @Override
@@ -44,8 +51,10 @@ public class NotesFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        fragment = DrawerDialogFragment.newInstance();
+
         final RecyclerView recycler = view.findViewById(R.id.recycler);
-        adapter = new NotesAdapter();
+        final NotesAdapter adapter = new NotesAdapter();
         recycler.setAdapter(adapter);
 
         final ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
@@ -65,6 +74,13 @@ public class NotesFragment extends Fragment {
         view.findViewById(R.id.fab).setOnClickListener(it -> {
             EditFragmentArgs args = new EditFragmentArgs.Builder().build();
             Navigation.findNavController(it).navigate(R.id.action_notesFragment_to_editFragment2, args.toBundle());
+        });
+
+        final BottomAppBar appBar = view.findViewById(R.id.bottomBar);
+        appBar.setNavigationOnClickListener(v -> {
+            if (getFragmentManager() != null) {
+                fragment.show(getFragmentManager(), DrawerDialogFragment.TAG);
+            }
         });
     }
 }

@@ -16,6 +16,7 @@ import java9.util.stream.Collectors;
 import java9.util.stream.StreamSupport;
 import k0bin.notes.App;
 import k0bin.notes.model.Database;
+import k0bin.notes.model.FilterTag;
 import k0bin.notes.model.Note;
 import k0bin.notes.model.NoteTag;
 import k0bin.notes.model.NoteWithTags;
@@ -32,6 +33,7 @@ public class NotesViewModel extends AndroidViewModel {
     private final LiveData<List<NoteTag>> noteTags;
 
     private final MutableLiveData<List<NoteWithTags>> notesWithTags = new MutableLiveData<>();
+    private final MutableLiveData<List<FilterTag>> filterTags = new MutableLiveData<>();
     private final Set<Tag> filter = new HashSet<>();
 
     private boolean isNoteUpdateQueued = false;
@@ -62,6 +64,7 @@ public class NotesViewModel extends AndroidViewModel {
                 isNoteUpdateQueued = true;
                 handler.post(this::updateNotesWithTags);
             }
+            updateFilterTags();
         });
         noteTags.observeForever(it -> {
             if (!isNoteUpdateQueued) {
@@ -97,8 +100,23 @@ public class NotesViewModel extends AndroidViewModel {
         isNoteUpdateQueued = false;
     }
 
+    private void updateFilterTags() {
+        if (tags.getValue() == null) {
+            return;
+        }
+
+        List<FilterTag> newFilterTags = StreamSupport.stream(tags.getValue())
+                .map(t -> new FilterTag(t, filter.contains(t)))
+                .collect(Collectors.toList());
+        filterTags.setValue(newFilterTags);
+    }
+
     public LiveData<List<NoteWithTags>> getNotes() {
         return notesWithTags;
+    }
+
+    public LiveData<List<FilterTag>> getTags() {
+        return filterTags;
     }
 
     public void deleteNote(int position) {
@@ -113,11 +131,13 @@ public class NotesViewModel extends AndroidViewModel {
         AsyncHelper.runAsync(() -> notesDao.delete(notes.get(position).getNote()));
     }
 
-    public void addFilter(Tag tag) {
-        filter.add(tag);
-    }
+    public void toggleFilter(Tag tag) {
+        if (filter.contains(tag)) {
+            filter.remove(tag);
+        } else {
+            filter.add(tag);
+        }
 
-    public void removeFilter(Tag tag) {
-        filter.remove(tag);
+        updateFilterTags();
     }
 }
