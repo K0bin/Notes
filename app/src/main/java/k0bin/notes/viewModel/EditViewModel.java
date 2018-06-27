@@ -39,6 +39,8 @@ public class EditViewModel extends AndroidViewModel {
     private LiveData<List<Tag>> dbTags;
     private final Observer<List<Tag>> dbTagsObserver;
 
+    private final Object saveSyncPrimitive = new Object();
+
     public EditViewModel(@NonNull Application application) {
         super(application);
 
@@ -159,34 +161,37 @@ public class EditViewModel extends AndroidViewModel {
         final String text = this.text.getValue() != null ? this.text.getValue().trim() : "";
 
         AsyncHelper.runAsync(() -> {
-            final Set<Tag> tags = this.tags.getValue() != null ? this.tags.getValue() : new HashSet<>();
-            if (noteId != 0) {
-                if (title.length() > 0 || text.length() > 0) {
-                    notesDao.update(new Note(noteId, title, text));
-                    tagsDao.deleteAllFromNote(noteId);
-                    for (Tag tag : tags) {
-                        tagsDao.insert(tag);
-                        tagsDao.insertToNote(new NoteTag(noteId, tag.getName()));
+            synchronized (saveSyncPrimitive) { //Use a lock, just in case
+                final Set<Tag> tags = this.tags.getValue() != null ? this.tags.getValue() : new HashSet<>();
+                if (noteId != 0) {
+                    if (title.length() > 0 || text.length() > 0) {
+                        notesDao.update(new Note(noteId, title, text));
+                        tagsDao.deleteAllFromNote(noteId);
+                        for (Tag tag : tags) {
+                            tagsDao.insert(tag);
+                            tagsDao.insertToNote(new NoteTag(noteId, tag.getName()));
+                        }
+                    } else {
+                        notesDao.delete(noteId);
+                        tagsDao.deleteAllFromNote(noteId);
                     }
                 } else {
-                    notesDao.delete(noteId);
-                    tagsDao.deleteAllFromNote(noteId);
-                }
-            } else {
-                if (title.length() > 0 || text.length() > 0) {
-                    long newId = notesDao.insert(new Note(0L, title, text));
-                    for (Tag tag : tags) {
-                        tagsDao.insertToNote(new NoteTag(newId, tag.getName()));
+                    if (title.length() > 0 || text.length() > 0) {
+                        long newId = notesDao.insert(new Note(0L, title, text));
+                        for (Tag tag : tags) {
+                            tagsDao.insertToNote(new NoteTag(newId, tag.getName()));
+                        }
                     }
                 }
-            }
 
-            //Cleanup unused tags
-            final List<Tag> unusedTags = tagsDao.getUnusedTags();
-            StreamSupport.stream(unusedTags).forEach(tagsDao::delete);
+                //Cleanup unused tags
+                final List<Tag> unusedTags = tagsDao.getUnusedTags();
+                StreamSupport.stream(unusedTags).forEach(tagsDao::delete);
+
+                isTitleDirty = false;
+                isTextDirty = false;
+                areTagsDirty = false;
+            }
         });
-        isTitleDirty = false;
-        isTextDirty = false;
-        areTagsDirty = false;
     }
 }
