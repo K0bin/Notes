@@ -5,6 +5,7 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 
 import java.util.HashSet;
@@ -33,9 +34,14 @@ public class NotesViewModel extends AndroidViewModel {
 	private final MutableLiveData<List<NoteWithTags>> notesWithTags = new MutableLiveData<>();
 	private final Set<Tag> filter = new HashSet<>();
 
+	private boolean isNoteUpdateQueued = false;
+	private final Handler handler; //Used to delay updates coming from the database so we don't do 3 updates if all 3 tables are changed
+
 	@SuppressLint("NewApi")
     public NotesViewModel(@NonNull Application application) {
 		super(application);
+
+		handler = new Handler(application.getMainLooper());
 
 		final Database db = ((App) application).getDb();
 		notesDao = db.notesDao();
@@ -45,9 +51,24 @@ public class NotesViewModel extends AndroidViewModel {
 		tags = tagsDao.getAll();
 		noteTags = tagsDao.getAllNoteTags();
 
-		notes.observeForever(it -> updateNotesWithTags());
-        tags.observeForever(it -> updateNotesWithTags());
-        noteTags.observeForever(it -> updateNotesWithTags());
+		notes.observeForever(it -> {
+		    if (!isNoteUpdateQueued) {
+                isNoteUpdateQueued = true;
+                handler.post(this::updateNotesWithTags);
+            }
+        });
+        tags.observeForever(it -> {
+            if (!isNoteUpdateQueued) {
+                isNoteUpdateQueued = true;
+                handler.post(this::updateNotesWithTags);
+            }
+        });
+        noteTags.observeForever(it -> {
+            if (!isNoteUpdateQueued) {
+                isNoteUpdateQueued = true;
+                handler.post(this::updateNotesWithTags);
+            }
+        });
 	}
 
 	private void updateNotesWithTags() {
@@ -62,8 +83,9 @@ public class NotesViewModel extends AndroidViewModel {
                             .map(
                                     nt -> StreamSupport.stream(this.tags.getValue())
                                             .filter(t -> t.getName().equals(nt.getTagName()))
-                                            .findFirst().get()
+                                            .findFirst().orElse(null)
                             )
+		                    .filter(t -> t != null)
                             .collect(Collectors.toSet());
 
                     return new NoteWithTags(n, tags);
@@ -71,6 +93,8 @@ public class NotesViewModel extends AndroidViewModel {
                 .filter(n -> n.getTags().containsAll(filter))
                 .collect(Collectors.toList());
         notesWithTags.setValue(newNotesWithTags);
+
+        isNoteUpdateQueued = false;
     }
 
 	public LiveData<List<NoteWithTags>> getNotes() {
