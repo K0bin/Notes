@@ -4,8 +4,8 @@ import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
+import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
-import android.arch.persistence.room.Update;
 
 import java.util.List;
 
@@ -15,33 +15,21 @@ public interface TagsDao {
     LiveData<List<Tag>> getAll();
 
     @Query("SELECT * FROM tags WHERE name=:name")
-    LiveData<Tag> getByName(String name);
-
-    @Query("SELECT * FROM tags WHERE name=:name")
     Tag getByNameSync(String name);
 
-    @Insert()
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     long insert(Tag note);
-
-    @Update()
-    void update(Tag note);
 
     @Delete()
     void delete(Tag note);
 
-    @Query("DELETE FROM tags WHERE name=:name")
-    void delete(String name);
-
-    @Query("SELECT COUNT(*) FROM noteTags WHERE tagName=:tagName")
-    int countNotesWithTag(String tagName);
-
-    @Query("DELETE FROM noteTags WHERE noteId=:noteId AND tagName=:tagName")
-    void deleteFromNote(long noteId, String tagName);
+    @Query("SELECT * FROM tags t LEFT JOIN noteTags nt ON nt.tagName = t.name WHERE nt.tagName IS NULL")
+    List<Tag> getUnusedTags();
 
     @Query("DELETE FROM noteTags WHERE noteId=:noteId")
     void deleteAllFromNote(long noteId);
 
-    @Insert()
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertToNote(NoteTag noteTag);
 
     @Query("SELECT t.* FROM tags t LEFT JOIN noteTags nt ON nt.tagName = t.name WHERE nt.noteId=:noteId")

@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import java9.util.stream.StreamSupport;
 import k0bin.notes.App;
 import k0bin.notes.model.Database;
 import k0bin.notes.model.Note;
@@ -169,13 +170,7 @@ public class EditViewModel extends AndroidViewModel {
                     }
                 } else {
                     notesDao.delete(noteId);
-                    for (Tag tag : tags) {
-                        tagsDao.deleteFromNote(noteId, tag.getName());
-                        int count = tagsDao.countNotesWithTag(tag.getName());
-                        if (count == 0) {
-                            tagsDao.delete(tag);
-                        }
-                    }
+                    tagsDao.deleteAllFromNote(noteId);
                 }
             } else {
                 if (title.length() > 0 || text.length() > 0) {
@@ -185,6 +180,10 @@ public class EditViewModel extends AndroidViewModel {
                     }
                 }
             }
+
+            //Cleanup unused tags
+            final List<Tag> unusedTags = tagsDao.getUnusedTags();
+            StreamSupport.stream(unusedTags).forEach(tagsDao::delete);
         });
         isTitleDirty = false;
         isTextDirty = false;
