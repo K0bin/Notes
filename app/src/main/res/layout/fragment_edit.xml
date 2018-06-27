@@ -54,7 +54,7 @@
             android:gravity="top|start"
             android:inputType="textMultiLine"/>
 
-        <android.support.v4.widget.NestedScrollView
+        <HorizontalScrollView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
@@ -63,7 +63,8 @@
             android:id="@+id/tags">
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
                 <EditText
                     android:layout_width="128dp"
                     android:layout_height="wrap_content"
@@ -87,11 +88,11 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:id="@+id/tagChips"
-                    android:layout_gravity="clip_vertical"
+                    android:layout_gravity="center_vertical"
                     app:singleLine="true"
                     />
             </LinearLayout>
-        </android.support.v4.widget.NestedScrollView>
+        </HorizontalScrollView>
     </android.support.constraint.ConstraintLayout>
 
     <android.support.design.bottomappbar.BottomAppBar

@@ -8,7 +8,7 @@ import android.support.annotation.NonNull;
 import java.util.Objects;
 
 @Entity(tableName = "tags")
-public class Tag {
+public class Tag implements Comparable<Tag> {
     @PrimaryKey
     @NonNull
     private String name;
@@ -41,5 +41,10 @@ public class Tag {
     @Override
     public int hashCode() {
         return Objects.hash(name);
+    }
+
+    @Override
+    public int compareTo(@NonNull Tag tag) {
+        return name.compareTo(tag.name);
     }
 }

@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import androidx.navigation.Navigation;
 import java9.util.stream.StreamSupport;
 import k0bin.notes.R;
+import k0bin.notes.model.Tag;
 import k0bin.notes.viewModel.EditViewModel;
 
 public class EditFragment extends Fragment {
@@ -97,16 +98,25 @@ public class EditFragment extends Fragment {
             labelText.setText("");
         });
 
+		final View.OnClickListener onTagClicked = v -> {
+		    final Object viewTag = v.getTag();
+		    if (viewTag instanceof Tag) {
+                viewModel.removeTag((Tag)viewTag);
+            }
+        };
+
 		final ChipGroup tagGroup = view.findViewById(R.id.tagChips);
 		viewModel.getTags().observe(this, tags -> {
 		    tagGroup.removeAllViews();
 		    if (tags == null) {
 		        return;
             }
-            StreamSupport.stream(tags).forEachOrdered(tag -> {
+            StreamSupport.stream(tags).sorted().forEachOrdered(tag -> {
                 final Chip tagView = new Chip(tagGroup.getContext());
                 tagView.setLayoutParams(new ChipGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-                tagView.setText(tag.getName());
+                tagView.setChipText(tag.getName());
+                tagView.setTag(tag);
+                tagView.setOnClickListener(onTagClicked);
                 tagGroup.addView(tagView);
             });
         });

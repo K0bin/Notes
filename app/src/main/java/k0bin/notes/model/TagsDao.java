@@ -38,6 +38,9 @@ public interface TagsDao {
     @Query("DELETE FROM noteTags WHERE noteId=:noteId AND tagName=:tagName")
     void deleteFromNote(long noteId, String tagName);
 
+    @Query("DELETE FROM noteTags WHERE noteId=:noteId")
+    void deleteAllFromNote(long noteId);
+
     @Insert()
     void insertToNote(NoteTag noteTag);
 

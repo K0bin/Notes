@@ -162,6 +162,7 @@ public class EditViewModel extends AndroidViewModel {
 			if (noteId != 0) {
 				if (title.length() > 0 || text.length() > 0) {
 					notesDao.update(new Note(noteId, title, text));
+					tagsDao.deleteAllFromNote(noteId);
                     for (Tag tag : tags) {
                         tagsDao.insert(tag);
                         tagsDao.insertToNote(new NoteTag(noteId, tag.getName()));
