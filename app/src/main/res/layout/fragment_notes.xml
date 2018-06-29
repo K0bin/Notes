@@ -94,7 +94,7 @@
             tools:listitem="@layout/view_drawer_tag"
             tools:itemCount="11"
             android:id="@+id/drawerRecycler"
-            android:paddingTop="16dp"
+            android:paddingTop="32dp"
             android:paddingBottom="16dp"
             android:clipToPadding="false"
             app:layoutManager="android.support.v7.widget.LinearLayoutManager"
