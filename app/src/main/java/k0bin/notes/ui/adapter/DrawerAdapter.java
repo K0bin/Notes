@@ -25,6 +25,11 @@ public class DrawerAdapter extends ListAdapter<FilterTag, DrawerViewHolder> {
         this.viewModel = viewModel;
     }
 
+    @Override
+    public long getItemId(int position) {
+        return getItem(position).getTag().hashCode();
+    }
+
     @NonNull
     @Override
     public DrawerViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int position) {

@@ -5,17 +5,18 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.bottomappbar.BottomAppBar;
-import android.support.design.widget.BottomSheetDialogFragment;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.navigation.Navigation;
 import k0bin.notes.R;
+import k0bin.notes.ui.adapter.DrawerAdapter;
 import k0bin.notes.ui.adapter.NotesAdapter;
 import k0bin.notes.viewModel.NotesViewModel;
 
@@ -25,8 +26,6 @@ import k0bin.notes.viewModel.NotesViewModel;
  */
 public class NotesFragment extends Fragment {
     private NotesViewModel viewModel;
-
-    private DrawerDialogFragment fragment;
 
     public NotesFragment() {}
 
@@ -51,10 +50,9 @@ public class NotesFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        fragment = DrawerDialogFragment.newInstance();
-
         final RecyclerView recycler = view.findViewById(R.id.recycler);
         final NotesAdapter adapter = new NotesAdapter();
+        recycler.setHasFixedSize(true);
         recycler.setAdapter(adapter);
 
         final ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
@@ -76,10 +74,28 @@ public class NotesFragment extends Fragment {
             Navigation.findNavController(it).navigate(R.id.action_notesFragment_to_editFragment2, args.toBundle());
         });
 
+
+        //Navigation drawer
+        final RecyclerView drawerRecycler = view.findViewById(R.id.drawerRecycler);
+        final DrawerAdapter drawerAdapter = new DrawerAdapter(viewModel);
+        drawerRecycler.setAdapter(drawerAdapter);
+        viewModel.getTags().observe(this, drawerAdapter::submitList);
+
+        final FrameLayout drawerFrame = view.findViewById(R.id.drawerSheet);
+        final BottomSheetBehavior drawerBehavior = BottomSheetBehavior.from(drawerFrame);
+        BottomSheetBehavior.from(drawerFrame).setState(BottomSheetBehavior.STATE_HIDDEN);
+
+        final FrameLayout overlay = view.findViewById(R.id.overlay);
+        overlay.setOnClickListener(v -> {
+            drawerBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+            overlay.setVisibility(View.GONE);
+        });
+
         final BottomAppBar appBar = view.findViewById(R.id.bottomBar);
         appBar.setNavigationOnClickListener(v -> {
             if (getFragmentManager() != null) {
-                fragment.show(getFragmentManager(), DrawerDialogFragment.TAG);
+                BottomSheetBehavior.from(drawerFrame).setState(BottomSheetBehavior.STATE_COLLAPSED);
+                overlay.setVisibility(View.VISIBLE);
             }
         });
     }

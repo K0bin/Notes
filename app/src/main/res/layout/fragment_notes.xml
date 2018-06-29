@@ -64,4 +64,40 @@
         app:layout_behavior="android.support.design.widget.AppBarLayout$ScrollingViewBehavior"
         />
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/overlay"
+        android:visibility="gone"
+        android:elevation="11dp"
+        android:fitsSystemWindows="false"
+        android:background="#AA000000"
+        />
+
+    <android.support.design.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:minHeight="128dp"
+        app:layout_behavior="@string/bottom_sheet_behavior"
+        app:behavior_peekHeight="300dp"
+        app:behavior_hideable="true"
+        android:id="@+id/drawerSheet"
+        app:cardElevation="12dp"
+        app:cardBackgroundColor="?attr/colorPrimary"
+        app:cardCornerRadius="16dp"
+        >
+
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:listitem="@layout/view_drawer_tag"
+            tools:itemCount="11"
+            android:id="@+id/drawerRecycler"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+            android:clipToPadding="false"
+            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            android:orientation="vertical"/>
+    </android.support.design.card.MaterialCardView>
+
 </android.support.design.widget.CoordinatorLayout>

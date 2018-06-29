@@ -47,7 +47,7 @@ public class EditViewModel extends AndroidViewModel {
         Database db = ((App) application).getDb();
         notesDao = db.notesDao();
         tagsDao = db.tagsDao();
-        noteId.setValue(-1L);
+        noteId.setValue(0L);
 
         dbTagsObserver = tags -> {
             if (!areTagsDirty) {
@@ -179,6 +179,7 @@ public class EditViewModel extends AndroidViewModel {
                     if (title.length() > 0 || text.length() > 0) {
                         long newId = notesDao.insert(new Note(0L, title, text));
                         for (Tag tag : tags) {
+                            tagsDao.insert(tag);
                             tagsDao.insertToNote(new NoteTag(newId, tag.getName()));
                         }
                     }

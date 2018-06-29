@@ -139,5 +139,6 @@ public class NotesViewModel extends AndroidViewModel {
         }
 
         updateFilterTags();
+        handler.post(this::updateNotesWithTags);
     }
 }
