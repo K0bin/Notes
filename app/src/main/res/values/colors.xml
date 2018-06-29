@@ -3,4 +3,5 @@
     <color name="colorPrimary">#1976d2</color>
     <color name="colorPrimaryDark">#004ba0</color>
     <color name="colorAccent">#388e3c</color>
+    <color name="drawerOverlay">#64000000</color>
 </resources>
