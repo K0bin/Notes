@@ -2,7 +2,6 @@ package k0bin.notes.ui.fragment;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,10 +11,8 @@ import android.support.design.card.MaterialCardView;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewPropertyAnimatorCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +20,7 @@ import android.widget.FrameLayout;
 
 import androidx.navigation.Navigation;
 import k0bin.notes.R;
+import k0bin.notes.ui.activity.MainActivity;
 import k0bin.notes.ui.adapter.DrawerAdapter;
 import k0bin.notes.ui.adapter.NotesAdapter;
 import k0bin.notes.viewModel.NotesViewModel;
@@ -31,7 +29,7 @@ import k0bin.notes.viewModel.NotesViewModel;
 /**
  * Fragment that lists all notes
  */
-public class NotesFragment extends Fragment {
+public class NotesFragment extends Fragment implements MainActivity.BackFragment {
     private NotesViewModel viewModel;
     private int overlayColor = 0;
 
@@ -138,6 +136,7 @@ public class NotesFragment extends Fragment {
         appBar.setNavigationOnClickListener(v -> {
             setDrawerVisibility(true);
         });
+
     }
 
     private void setDrawerVisibility(boolean isVisible) {
@@ -151,5 +150,14 @@ public class NotesFragment extends Fragment {
             overlayAnimator.reverse();
         }
         isDrawerVisible = isVisible;
+    }
+
+    @Override
+    public boolean goBack() {
+        if (isDrawerVisible) {
+            setDrawerVisibility(false);
+            return true;
+        }
+        return false;
     }
 }
