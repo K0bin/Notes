@@ -94,14 +94,46 @@ public class NotesFragment extends Fragment implements MainActivity.BackFragment
 
 
         //Navigation drawer
+        drawer = view.findViewById(R.id.drawerSheet);
+
         final RecyclerView drawerRecycler = view.findViewById(R.id.drawerRecycler);
         final DrawerAdapter drawerAdapter = new DrawerAdapter(viewModel);
         drawerRecycler.setAdapter(drawerAdapter);
         viewModel.getTags().observe(this, drawerAdapter::submitList);
+        final float roundRadius = drawer.getRadius();
 
-        drawer = view.findViewById(R.id.drawerSheet);
+        final ObjectAnimator cornerAnimator = ObjectAnimator.ofFloat(drawer, "radius", roundRadius, 0f);
+        cornerAnimator.setDuration(animationDuration);
+
         drawerBehavior = BottomSheetBehavior.from(drawer);
-        BottomSheetBehavior.from(drawer).setState(BottomSheetBehavior.STATE_HIDDEN);
+        drawerBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        drawerBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            private boolean wasExpanded;
+
+            @Override
+            public void onStateChanged(@NonNull View view, int state) {
+                switch (state) {
+                    case BottomSheetBehavior.STATE_HIDDEN:
+                        setDrawerVisibility(false);
+                        break;
+
+                    case BottomSheetBehavior.STATE_EXPANDED:
+                        cornerAnimator.start();
+                        wasExpanded = true;
+                        break;
+
+                    default:
+                        if (wasExpanded) {
+                            cornerAnimator.reverse();
+                            wasExpanded = false;
+                        }
+                        break;
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View view, float v) {}
+        });
 
         overlay = view.findViewById(R.id.overlay);
         overlay.setOnClickListener(v -> {
