@@ -2,6 +2,7 @@ package k0bin.notes.ui.fragment;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -33,11 +34,11 @@ import k0bin.notes.viewModel.NotesViewModel;
  */
 public class NotesFragment extends Fragment implements MainActivity.BackFragment {
     private NotesViewModel viewModel;
-    private int overlayColor = 0;
 
+    private int statusBarHeight;
+    private int overlayColor = 0;
     private boolean isDrawerVisible = false;
     private FrameLayout overlay;
-    private MaterialCardView drawer;
     private BottomSheetBehavior drawerBehavior;
     private ObjectAnimator overlayAnimator;
     private int animationDuration;
@@ -96,9 +97,11 @@ public class NotesFragment extends Fragment implements MainActivity.BackFragment
 
 
         //Navigation drawer
-        drawer = view.findViewById(R.id.drawerSheet);
+        MaterialCardView drawer = view.findViewById(R.id.drawerSheet);
+        statusBarHeight = getStatusBarHeight();
 
         final RecyclerView drawerRecycler = view.findViewById(R.id.drawerRecycler);
+        final int initialMargin = ((FrameLayout.LayoutParams)drawerRecycler.getLayoutParams()).topMargin;
         final DrawerAdapter drawerAdapter = new DrawerAdapter(viewModel);
         drawerRecycler.setAdapter(drawerAdapter);
         viewModel.getTags().observe(this, drawerAdapter::submitList);
@@ -106,6 +109,14 @@ public class NotesFragment extends Fragment implements MainActivity.BackFragment
 
         final ObjectAnimator cornerAnimator = ObjectAnimator.ofFloat(drawer, "radius", roundRadius, 0f);
         cornerAnimator.setDuration(animationDuration);
+
+        final ValueAnimator marginAnimator = ValueAnimator.ofFloat((float)initialMargin, (float)statusBarHeight);
+        marginAnimator.setDuration(animationDuration);
+        marginAnimator.addUpdateListener(animator -> {
+            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)drawerRecycler.getLayoutParams();
+            params.topMargin = (int)((float)animator.getAnimatedValue());
+            drawerRecycler.setLayoutParams(params);
+        });
 
         drawerBehavior = BottomSheetBehavior.from(drawer);
         drawerBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
@@ -121,12 +132,15 @@ public class NotesFragment extends Fragment implements MainActivity.BackFragment
 
                     case BottomSheetBehavior.STATE_EXPANDED:
                         cornerAnimator.start();
+                        marginAnimator.start();
+
                         wasExpanded = true;
                         break;
 
                     default:
                         if (wasExpanded) {
                             cornerAnimator.reverse();
+                            marginAnimator.reverse();
                             wasExpanded = false;
                         }
                         break;
@@ -194,6 +208,15 @@ public class NotesFragment extends Fragment implements MainActivity.BackFragment
             overlayAnimator.reverse();
         }
         isDrawerVisible = isVisible;
+    }
+
+    private int getStatusBarHeight() {
+        int result = 0;
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
     }
 
     @Override

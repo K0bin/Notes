@@ -86,6 +86,7 @@
         app:cardElevation="12dp"
         app:cardBackgroundColor="?attr/colorPrimary"
         app:cardCornerRadius="16dp"
+        android:fitsSystemWindows="false"
         >
 
         <android.support.v7.widget.RecyclerView
@@ -93,11 +94,12 @@
             android:layout_height="match_parent"
             tools:listitem="@layout/view_drawer_tag"
             tools:itemCount="11"
+            android:layout_marginTop="16dp"
             android:id="@+id/drawerRecycler"
-            android:paddingTop="32dp"
             android:paddingBottom="16dp"
             android:clipToPadding="false"
             app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            android:fitsSystemWindows="false"
             android:orientation="vertical"/>
     </android.support.design.card.MaterialCardView>
 
