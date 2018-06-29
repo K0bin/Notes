@@ -35,6 +35,7 @@ public class NotesViewModel extends AndroidViewModel {
     private final MutableLiveData<List<NoteWithTags>> notesWithTags = new MutableLiveData<>();
     private final MutableLiveData<List<FilterTag>> filterTags = new MutableLiveData<>();
     private final Set<Tag> filter = new HashSet<>();
+    private boolean isFilterDirty = false;
 
     private boolean isNoteUpdateQueued = false;
     private final Handler handler; //Used to delay updates coming from the database so we don't do 3 updates if all 3 tables are changed
@@ -93,7 +94,7 @@ public class NotesViewModel extends AndroidViewModel {
 
                     return new NoteWithTags(n, tags);
                 })
-                .filter(n -> n.getTags().containsAll(filter))
+                .filter(n -> filter.containsAll(n.getTags()))
                 .collect(Collectors.toList());
         notesWithTags.setValue(newNotesWithTags);
 
@@ -103,6 +104,10 @@ public class NotesViewModel extends AndroidViewModel {
     private void updateFilterTags() {
         if (tags.getValue() == null) {
             return;
+        }
+
+        if (!isFilterDirty) {
+            filter.addAll(tags.getValue());
         }
 
         List<FilterTag> newFilterTags = StreamSupport.stream(tags.getValue())
@@ -136,6 +141,10 @@ public class NotesViewModel extends AndroidViewModel {
             filter.remove(tag);
         } else {
             filter.add(tag);
+        }
+
+        if (this.tags.getValue() != null) {
+            isFilterDirty = filter.size() != this.tags.getValue().size();
         }
 
         updateFilterTags();
