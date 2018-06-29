@@ -1,6 +1,8 @@
 package k0bin.notes.ui.fragment;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.res.ColorStateList;
+import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,6 +16,8 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -30,6 +34,9 @@ public class EditFragment extends Fragment {
     private EditText titleEdit;
     private EditText textEdit;
 
+    private int accentColor;
+    private int primaryColorDark;
+
     public EditFragment() {    }
 
     @Override
@@ -37,6 +44,17 @@ public class EditFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         viewModel = ViewModelProviders.of(this).get(EditViewModel.class);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (getActivity() != null) {
+            Window window = getActivity().getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(primaryColorDark);
+        }
     }
 
     @Nullable
@@ -48,6 +66,11 @@ public class EditFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        TypedArray attrs = getContext().getTheme().obtainStyledAttributes(new int[] { R.attr.colorAccent, R.attr.colorPrimaryDark} );
+        accentColor = attrs.getColor(0, 0xFFFFFF);
+        primaryColorDark = attrs.getColor(1, 0);
+        attrs.recycle();
 
         Bundle arguments = getArguments();
         final int noteId = EditFragmentArgs.fromBundle(arguments != null ? arguments : Bundle.EMPTY).getNoteId();
@@ -112,10 +135,12 @@ public class EditFragment extends Fragment {
                 return;
             }
             StreamSupport.stream(tags).sorted().forEachOrdered(tag -> {
-                final Chip tagView = new Chip(tagGroup.getContext());
+                final Chip tagView = new Chip(tagGroup.getContext(), null, R.style.Widget_MaterialComponents_Chip_Entry);
                 tagView.setLayoutParams(new ChipGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                 tagView.setChipText(tag.getName());
                 tagView.setTag(tag);
+                tagView.setCloseIconEnabled(true);
+                tagView.setChipBackgroundColor(ColorStateList.valueOf(accentColor));
                 tagView.setOnClickListener(onTagClicked);
                 tagGroup.addView(tagView);
             });

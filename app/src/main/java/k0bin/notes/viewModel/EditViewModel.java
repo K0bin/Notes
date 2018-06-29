@@ -47,6 +47,7 @@ public class EditViewModel extends AndroidViewModel {
         Database db = ((App) application).getDb();
         notesDao = db.notesDao();
         tagsDao = db.tagsDao();
+        tags.setValue(new HashSet<>());
         noteId.setValue(0L);
 
         dbTagsObserver = tags -> {

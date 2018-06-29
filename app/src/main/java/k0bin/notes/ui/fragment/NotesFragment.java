@@ -16,6 +16,8 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import androidx.navigation.Navigation;
@@ -168,7 +170,17 @@ public class NotesFragment extends Fragment implements MainActivity.BackFragment
         appBar.setNavigationOnClickListener(v -> {
             setDrawerVisibility(true);
         });
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (getActivity() != null) {
+            Window window = getActivity().getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(0);
+        }
     }
 
     private void setDrawerVisibility(boolean isVisible) {
