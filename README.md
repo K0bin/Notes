@@ -1,7 +1,7 @@
 # Notes
 
 <h1 align=center>
-<img src="Logo/horizontal.png" width=50%>
+<img src="assets/Logo/horizontal.png" width=50%>
 </h1>
 
 Tiny simplistic notes app for Android
