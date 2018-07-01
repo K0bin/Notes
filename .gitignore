@@ -11,6 +11,7 @@
 .idea/statistic.xml
 .idea/caches/build_file_checksums.ser
 .idea/
+app/release/
 
 # Built application files
 *.apk
