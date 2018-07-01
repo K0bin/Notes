@@ -26,9 +26,10 @@ import androidx.navigation.Navigation;
 import java9.util.stream.StreamSupport;
 import k0bin.notes.R;
 import k0bin.notes.model.Tag;
+import k0bin.notes.ui.activity.MainActivity;
 import k0bin.notes.viewModel.EditViewModel;
 
-public class EditFragment extends Fragment {
+public class EditFragment extends Fragment implements MainActivity.BackFragment {
     private EditViewModel viewModel;
 
     private EditText titleEdit;
@@ -147,14 +148,17 @@ public class EditFragment extends Fragment {
         });
 
         final BottomAppBar bottomBar = view.findViewById(R.id.bottomBar);
-        bottomBar.setNavigationOnClickListener (button -> Navigation.findNavController(view).navigateUp());
+        bottomBar.setNavigationOnClickListener (button -> {
+            goBack();
+            Navigation.findNavController(view).navigateUp();
+        });
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
+    public boolean goBack() {
         viewModel.save();
         hideKeyboard();
+        return false;
     }
 
     private void hideKeyboard() {

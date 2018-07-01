@@ -35,7 +35,6 @@ import k0bin.notes.viewModel.NotesViewModel;
 public class NotesFragment extends Fragment implements MainActivity.BackFragment {
     private NotesViewModel viewModel;
 
-    private int statusBarHeight;
     private int overlayColor = 0;
     private boolean isDrawerVisible = false;
     private FrameLayout overlay;
@@ -98,7 +97,7 @@ public class NotesFragment extends Fragment implements MainActivity.BackFragment
 
         //Navigation drawer
         MaterialCardView drawer = view.findViewById(R.id.drawerSheet);
-        statusBarHeight = getStatusBarHeight();
+        int statusBarHeight = getStatusBarHeight();
 
         final RecyclerView drawerRecycler = view.findViewById(R.id.drawerRecycler);
         final int initialMargin = ((FrameLayout.LayoutParams)drawerRecycler.getLayoutParams()).topMargin;
@@ -110,7 +109,7 @@ public class NotesFragment extends Fragment implements MainActivity.BackFragment
         final ObjectAnimator cornerAnimator = ObjectAnimator.ofFloat(drawer, "radius", roundRadius, 0f);
         cornerAnimator.setDuration(animationDuration);
 
-        final ValueAnimator marginAnimator = ValueAnimator.ofFloat((float)initialMargin, (float)statusBarHeight);
+        final ValueAnimator marginAnimator = ValueAnimator.ofFloat((float)initialMargin, (float) statusBarHeight);
         marginAnimator.setDuration(animationDuration);
         marginAnimator.addUpdateListener(animator -> {
             FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)drawerRecycler.getLayoutParams();
